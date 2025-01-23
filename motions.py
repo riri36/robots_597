@@ -74,39 +74,39 @@ class motion_executioner(Node):
 
     def imu_callback(self, imu_msg: Imu):
         # log imu msgs
-        timestamp = Time.from_msg(msg.header.stamp).nanoseconds
+        timestamp = Time.from_msg(imu_msg.header.stamp).nanoseconds
 
-        imu_orientation = msg.orientation
-        imu_angular_vel = msg.angular_velocity
-        imu_linear_acc = msg.linear_acceleration
+        imu_orientation = imu_msg.orientation
+        imu_angular_vel = imu_msg.angular_velocity
+        imu_linear_acc = imu_msg.linear_acceleration
 
         
         
     def odom_callback(self, odom_msg: Odometry):
         # log odom msgs
-        timestamp = Time.from_msg(msg.header.stamp).nanoseconds
+        timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
 
-        odom_orientation = msg.pose.pose.orientation
-        odom_pos = msg.pose.pose.position
-        odom_lin_vel = msg.twist.twist.linear
-        odom_angular_vel = msg.twist.twist.angular
+        odom_orientation = odom_msg.pose.pose.orientation
+        odom_pos = odom_msg.pose.pose.position
+        odom_lin_vel = odom_msg.twist.twist.linear
+        odom_angular_vel = odom_msg.twist.twist.angular
                 
     def laser_callback(self, laser_msg: LaserScan):
         # log laser msgs with position msg at that time
-        timestamp = Time.from_msg(msg.header.stamp).nanoseconds
+        timestamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
 
-        laser_angle_min = msg.angle_min
-        laser_angle_max = msg.angle_max
-        laser_angle_increment = msg.angle_increment
+        laser_angle_min = laser_msg.angle_min
+        laser_angle_max = laser_msg.angle_max
+        laser_angle_increment = laser_msg.angle_increment
         
-        laser_time_increment = msg.time_increment
-        laser_scan_time = msg,scan_time
+        laser_time_increment = laser_msg.time_increment
+        laser_scan_time = laser_msg.scan_time
         
-        laser_range_min = msg.range_min
-        laser_range_max = msg.range_max
-        laser_ranges = msg.ranges
+        laser_range_min = laser_msg.range_min
+        laser_range_max = laser_msg.range_max
+        laser_ranges = laser_msg.ranges
         
-        laser_intensities = msg.intensities
+        laser_intensities = laser_msg.intensities
                 
     def timer_callback(self):
         
@@ -141,7 +141,8 @@ class motion_executioner(Node):
     def make_circular_twist(self):
         
         msg=Twist()
-        ... # fill up the twist msg for circular motion
+        msg.linear.x=0.5
+        msg.angular.z=0.5
         return msg
 
     def make_spiral_twist(self):
