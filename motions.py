@@ -139,7 +139,6 @@ class motion_executioner(Node):
     # TODO Part 4: Motion functions: complete the functions to generate the proper messages corresponding to the desired motions of the robot
 
     def make_circular_twist(self):
-        
         msg=Twist()
         msg.linear.x=0.5
         msg.angular.z=0.5
