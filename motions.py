@@ -50,16 +50,16 @@ class motion_executioner(Node):
         # TODO Part 3: Create the QoS profile by setting the proper parameters in (...)
         qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
 
-        # # TODO Part 5: Create below the subscription to the topics corresponding to the respective sensors
-        # # IMU subscription
+        # TODO Part 5: Create below the subscription to the topics corresponding to the respective sensors
+        # IMU subscription
         
         self.create_subscription(Imu, '/imu', self.imu_callback, qos_profile=qos)
         
-        # # ENCODER subscription
+        # ENCODER subscription
 
         self.create_subscription(Odometry, '/odom', self.odom_callback, qos_profile=qos)
         
-        # # LaserScan subscription 
+        # LaserScan subscription 
         
         self.create_subscription(LaserScan, '/scan', self.laser_callback, qos_profile=qos)
         
