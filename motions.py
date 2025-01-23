@@ -26,7 +26,7 @@ motion_types=['circle', 'spiral', 'line']
 
 class motion_executioner(Node):
     
-    def __init__(self, motion_type=0):
+    def __init__(self, motion_type=CIRCLE):
         
         super().__init__("motion_types")
         
@@ -147,12 +147,12 @@ class motion_executioner(Node):
 
     def make_spiral_twist(self):
         msg=Twist()
-        ... # fill up the twist msg for spiral motion
+        msg.angular.z=0.5
         return msg
     
     def make_acc_line_twist(self):
         msg=Twist()
-        ... # fill up the twist msg for line motion
+        msg.linear.x=0.5
         return msg
 
 import argparse
