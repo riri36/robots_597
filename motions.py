@@ -26,7 +26,7 @@ motion_types=['circle', 'spiral', 'line']
 
 class motion_executioner(Node):
     
-    def __init__(self, motion_type=CIRCLE):
+    def __init__(self, motion_type=0):
         
         super().__init__("motion_types")
         
@@ -34,10 +34,10 @@ class motion_executioner(Node):
         
         self.radius_=0.0
         
-        self.successful_init=False
-        self.imu_initialized=False
-        self.odom_initialized=False
-        self.laser_initialized=False
+        self.successful_init=True
+        self.imu_initialized=True
+        self.odom_initialized=True
+        self.laser_initialized=True
         
         # TODO Part 3: Create a publisher to send velocity commands by setting the proper parameters in (...)
         self.vel_publisher=self.create_publisher(Twist,'/cmd_vel',10)
@@ -79,9 +79,8 @@ class motion_executioner(Node):
         imu_orientation = imu_msg.orientation
         imu_angular_vel = imu_msg.angular_velocity
         imu_linear_acc = imu_msg.linear_acceleration
-
         
-        
+    
     def odom_callback(self, odom_msg: Odometry):
         # log odom msgs
         timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
@@ -117,8 +116,6 @@ class motion_executioner(Node):
             return
         
         cmd_vel_msg=Twist()
-        # cmd_vel_msg.linear.x=0.5
-        # cmd_vel_msg.angular.z=0.7
         
         if self.type==CIRCLE:
             cmd_vel_msg=self.make_circular_twist()
@@ -162,7 +159,7 @@ if __name__=="__main__":
     argParser=argparse.ArgumentParser(description="input the motion type")
 
 
-    argParser.add_argument("--motion", type=str, default="circle")
+    argParser.add_argument("--motion", type=str, default="spiral")
 
 
 
