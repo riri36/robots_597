@@ -24,9 +24,17 @@ class Logger:
             vals_str=""
 
             # TODO Part 5: Write the values from the list to the file
-            ...
-            
-            vals_str+="\n"
+            for value in values_list:
+                if isinstance(value, Time):  # If the value is a Time object
+                    vals_str += f"{value.nanoseconds}, "
+                elif hasattr(value, 'x') and hasattr(value, 'y') and hasattr(value, 'z'):  # for 3D types (Point, Vector3)
+                    vals_str += f"{value.x}, {value.y}, {value.z}, "
+                elif hasattr(value, 'w') and hasattr(value, 'x') and hasattr(value, 'y') and hasattr(value, 'z'):  # for Quaternion
+                    vals_str += f"{value.w}, {value.x}, {value.y}, {value.z}, "
+                else:
+                    vals_str += f"{value}, "  # anything else converts to string
+
+            vals_str = vals_str.rstrip(", ") + "\n"
             
             file.write(vals_str)
             
@@ -85,7 +93,12 @@ def euler_from_quaternion(quat):
     Convert quaternion (w in last place) to euler roll, pitch, yaw.
     quat = [x, y, z, w]
     """
-    ... # just unpack yaw
+    # just unpack yaw (z-axis rotation)
+    x, y, z, w = quat
+
+    siny_cosp = 2 * (w * z + x * y)
+    cosy_cosp = 1 - 2 * (y**2 + z**2)
+    yaw = atan2(siny_cosp, cosy_cosp)
     return yaw
 
 

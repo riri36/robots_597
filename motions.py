@@ -19,6 +19,7 @@ from rclpy.time import Time
 
 # You may add any other imports you may need/want to use below
 # import ...
+from utilities.py import log_values
 
 
 CIRCLE=0; SPIRAL=1; ACC_LINE=2
@@ -79,6 +80,8 @@ class motion_executioner(Node):
         imu_orientation = imu_msg.orientation
         imu_angular_vel = imu_msg.angular_velocity
         imu_linear_acc = imu_msg.linear_acceleration
+
+        log_values([timestamp, imu_orientation, imu_angular_vel, imu_linear_acc])
         
     
     def odom_callback(self, odom_msg: Odometry):
@@ -89,6 +92,8 @@ class motion_executioner(Node):
         odom_pos = odom_msg.pose.pose.position
         odom_lin_vel = odom_msg.twist.twist.linear
         odom_angular_vel = odom_msg.twist.twist.angular
+
+        log_values([timestamp, odom_orientation, odom_pos, odom_lin_vel, odom_angular_vel])
                 
     def laser_callback(self, laser_msg: LaserScan):
         # log laser msgs with position msg at that time
@@ -106,6 +111,8 @@ class motion_executioner(Node):
         laser_ranges = laser_msg.ranges
         
         laser_intensities = laser_msg.intensities
+
+        log_values([laser_angle_min, laser_angle_max, laser_angle_increment, laser_time_increment, laser_scan_time, laser_range_min, laser_range_max, laser_ranges, laser_intensities])
                 
     def timer_callback(self):
         
