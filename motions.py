@@ -142,21 +142,21 @@ class motion_executioner(Node):
 
     def make_circular_twist(self): #circle
         msg=Twist()
-        msg.linear.x=0.5
-        msg.angular.z=0.5
+        msg.linear.x=0.5 #gives robot forward movement
+        msg.angular.z=0.5 #desire constant angular velocity about z-axis
         return msg
 
     def make_spiral_twist(self): #spiral with increasing radius with time
         msg=Twist()
-        cur_time = self.get_clock().now().seconds_nanoseconds()[0]
-        msg.linear.x=0.1*cur_time
-        msg.angular=0.5
+        cur_time = self.get_clock().now().seconds_nanoseconds()[0] #gets robot current time
+        msg.linear.x=0.3*cur_time #increases linear speed with time
+        msg.angular.z=0.5 #constant angular velocity
         return msg
     
     def make_acc_line_twist(self): #accelerating linear speed straight line, is this what we need?
         msg=Twist()
-        cur_time = self.get_clock().now().seconds_nanoseconds()[0]
-        msg.linear.x=0.1*cur_time
+        cur_time = self.get_clock().now().seconds_nanoseconds()[0] #gets robot current time
+        msg.linear.x=0.1*cur_time #increases linear speed with time in x direction
         return msg
 
 import argparse
@@ -167,7 +167,7 @@ if __name__=="__main__":
     argParser=argparse.ArgumentParser(description="input the motion type")
 
 
-    argParser.add_argument("--motion", type=str, default="circle")
+    argParser.add_argument("--motion", type=str, default="line")
 
 
 
