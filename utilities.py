@@ -25,13 +25,13 @@ class Logger:
 
             # TODO Part 5: Write the values from the list to the file
             for value in values_list:
-                if isinstance(value, Time):  # If the value is a Time object
-                    vals_str += f"{value.nanoseconds}, "
-                elif hasattr(value, 'x') and hasattr(value, 'y') and hasattr(value, 'z'):  # for 3D types (Point, Vector3)
-                    vals_str += f"{value.x}, {value.y}, {value.z}, "
-                elif hasattr(value, 'w') and hasattr(value, 'x') and hasattr(value, 'y') and hasattr(value, 'z'):  # for Quaternion
-                    vals_str += f"{value.w}, {value.x}, {value.y}, {value.z}, "
-                else:
+                # if isinstance(value, Time):  # If the value is a Time object
+                #     vals_str += f"{value.nanoseconds}, "
+                # elif hasattr(value, 'x') and hasattr(value, 'y') and hasattr(value, 'z'):  # for 3D types (Point, Vector3)
+                #     vals_str += f"{value.x}, {value.y}, {value.z}, "
+                # elif hasattr(value, 'w') and hasattr(value, 'x') and hasattr(value, 'y') and hasattr(value, 'z'):  # for Quaternion
+                #     vals_str += f"{value.w}, {value.x}, {value.y}, {value.z}, "
+                # else:
                     vals_str += f"{value}, "  # anything else converts to string
 
             vals_str = vals_str.rstrip(", ") + "\n"
