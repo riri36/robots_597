@@ -140,20 +140,23 @@ class motion_executioner(Node):
     
     # TODO Part 4: Motion functions: complete the functions to generate the proper messages corresponding to the desired motions of the robot
 
-    def make_circular_twist(self):
+    def make_circular_twist(self): #circle
         msg=Twist()
         msg.linear.x=0.5
         msg.angular.z=0.5
         return msg
 
-    def make_spiral_twist(self):
+    def make_spiral_twist(self): #spiral with increasing radius with time
         msg=Twist()
-        msg.angular.z=0.5
+        cur_time = self.get_clock().now().seconds_nanoseconds()[0]
+        msg.linear.x=0.1*cur_time
+        msg.angular=0.5
         return msg
     
-    def make_acc_line_twist(self):
+    def make_acc_line_twist(self): #accelerating linear speed straight line, is this what we need?
         msg=Twist()
-        msg.linear.x=0.5
+        cur_time = self.get_clock().now().seconds_nanoseconds()[0]
+        msg.linear.x=0.1*cur_time
         return msg
 
 import argparse
