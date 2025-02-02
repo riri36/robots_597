@@ -32,12 +32,14 @@ class motion_executioner(Node):
         
         self.type=motion_type
         
-        self.radius_=0.0
+        self.radius_= 0.0
+
+        self.angle = 0.0
         
-        self.successful_init=True
-        self.imu_initialized=True
-        self.odom_initialized=True
-        self.laser_initialized=True
+        self.successful_init=False
+        self.imu_initialized=False
+        self.odom_initialized=False
+        self.laser_initialized=False
         
         # TODO Part 3: Create a publisher to send velocity commands by setting the proper parameters in (...)
         self.vel_publisher=self.create_publisher(Twist,'/cmd_vel',10)
@@ -74,16 +76,20 @@ class motion_executioner(Node):
 
     def imu_callback(self, imu_msg: Imu):
         # log imu msgs
+        self.imu_initialized=True
+
         timestamp = Time.from_msg(imu_msg.header.stamp).nanoseconds
 
         imu_orientation = imu_msg.orientation
         imu_angular_vel = imu_msg.angular_velocity
         imu_linear_acc = imu_msg.linear_acceleration
 
-        self.imu_logger.log_values([timestamp, imu_orientation, imu_angular_vel, imu_linear_acc])
+        self.imu_logger.log_values([imu_linear_acc.x, imu_linear_acc.y, imu_angular_vel.z, timestamp])
     
     def odom_callback(self, odom_msg: Odometry):
         # log odom msgs
+        self.odom_initialized=True
+
         timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
 
         odom_orientation = odom_msg.pose.pose.orientation
@@ -91,10 +97,13 @@ class motion_executioner(Node):
         odom_lin_vel = odom_msg.twist.twist.linear
         odom_angular_vel = odom_msg.twist.twist.angular
 
-        self.odom_logger.log_values([timestamp, odom_orientation, odom_pos, odom_lin_vel, odom_angular_vel])
+        yaw = euler_from_quaternion(odom_orientation)
+        self.odom_logger.log_values([odom_pos.x, odom_pos.y, yaw, timestamp])
                 
     def laser_callback(self, laser_msg: LaserScan):
         # log laser msgs with position msg at that time
+        self.laser_initialized=True
+
         timestamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
 
         laser_angle_min = laser_msg.angle_min
@@ -109,9 +118,10 @@ class motion_executioner(Node):
         laser_ranges = laser_msg.ranges
         
         laser_intensities = laser_msg.intensities
+        
+        self.laser_logger.log_values([laser_ranges, laser_angle_increment, timestamp])
+    
 
-        self.laser_logger.log_values([laser_angle_min, laser_angle_max, laser_angle_increment, laser_time_increment, laser_scan_time, laser_range_min, laser_range_max, laser_ranges, laser_intensities])
-                
     def timer_callback(self):
         
         if self.odom_initialized and self.laser_initialized and self.imu_initialized:
@@ -147,16 +157,15 @@ class motion_executioner(Node):
         return msg
 
     def make_spiral_twist(self): #spiral with increasing radius with time
-        msg=Twist()
-        cur_time = self.get_clock().now().seconds_nanoseconds()[0] #gets robot current time
-        msg.linear.x=0.3*cur_time #increases linear speed with time
+        msg=Twist()        
         msg.angular.z=0.5 #constant angular velocity
+        msg.linear.x=self.radius_*msg.angular.z#increases linear speed with time
+        self.radius_ += 0.01 #increase radius
         return msg
     
     def make_acc_line_twist(self): #accelerating linear speed straight line, is this what we need?
         msg=Twist()
-        cur_time = self.get_clock().now().seconds_nanoseconds()[0] #gets robot current time
-        msg.linear.x=0.1*cur_time #increases linear speed with time in x direction
+        msg.linear.x=0.5
         return msg
 
 import argparse
