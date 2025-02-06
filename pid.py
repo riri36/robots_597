@@ -85,7 +85,7 @@ class PID_ctrl:
         
         # TODO Part 4: Implement the control law of P-controller
         if self.type == P:
-            return ... # complete
+            return self.kp*latest_error# Kp * error
         
         # TODO Part 5: Implement the control law corresponding to each type of controller
         elif self.type == PD:
