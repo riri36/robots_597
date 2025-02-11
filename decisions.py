@@ -85,8 +85,9 @@ class decision_maker(Node):
             self.controller.PID_angular.logger.save_log()
             self.controller.PID_linear.logger.save_log()
             
-            #TODO Part 3: exit the spin
-            ... 
+            self.destroy_node()
+            rclpy.shutdown()   
+            return
         
         velocity, yaw_rate = self.controller.vel_request(self.localizer.getPose(), self.goal, True)
 
@@ -113,8 +114,6 @@ def main(args=None):
         DM=decision_maker(...)
     else:
         print("invalid motion type", file=sys.stderr)        
-    
-    
     
     try:
         spin(DM)
