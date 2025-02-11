@@ -2,6 +2,7 @@
 
 
 import sys
+import threading
 
 from utilities import euler_from_quaternion, calculate_angular_error, calculate_linear_error
 from pid import PID_ctrl
@@ -17,6 +18,7 @@ from localization import localization, rawSensor
 
 from planner import TRAJECTORY_PLANNER, POINT_PLANNER, planner
 from controller import controller, trajectoryController
+from rclpy.executors import MultiThreadedExecutor
 
 # You may add any other imports you may need/want to use below
 # import ...
@@ -63,7 +65,12 @@ class decision_maker(Node):
     def timerCallback(self):
         
         # TODO Part 3: Run the localization node
-        ...    # Remember that this file is already running the decision_maker node.
+        # Remember that this file is already running the decision_maker node.
+
+        # Start Localization node in a separate thread
+        self.localization_thread = threading.Thread(target=self.run_localization, daemon=True)
+        self.localization_thread.start()
+
 
         if self.localizer.getPose()  is  None:
             print("waiting for odom msgs ....")
@@ -93,6 +100,18 @@ class decision_maker(Node):
 
         #TODO Part 4: Publish the velocity to move the robot
         self.publisher.publish(velocity) 
+    
+    
+    def run_localization(self):
+        """Function to spin the localization node in its own thread."""
+        rclpy.spin(self.localizer)
+
+    def shutdown(self):
+        """Graceful shutdown of both nodes."""
+        self.get_logger().info("Shutting down nodes...")
+        self.localization_node.destroy_node()
+        self.destroy_node()
+        rclpy.shutdown()
 
 import argparse
 
@@ -118,6 +137,7 @@ def main(args=None):
     try:
         spin(DM)
     except SystemExit:
+        DM.shutdown()
         print(f"reached there successfully {DM.localizer.pose}")
 
 
