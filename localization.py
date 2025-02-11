@@ -56,8 +56,17 @@ class localization(Node):
 
 # TODO Part 3
 
-#TODO LAB 2
+# TODO LAB 2
 
 # Here put a guard that makes the node run, ONLY when run as a main thread!
 # This is to make sure this node functions right before using it in decision.py
     
+if __name__ == "__main__":
+    init(args=sys.argv)  # Initialize ROS 2
+    node = localization()
+    try:
+        spin(node)  # Keep the node running
+    except KeyboardInterrupt:
+        print("Shutting down localization node.")
+    finally:
+        node.destroy_node()
