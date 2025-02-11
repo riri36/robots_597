@@ -61,15 +61,14 @@ class decision_maker(Node):
 
         self.create_timer(publishing_period, self.timerCallback)
 
+        # Start Localization node in a separate thread
+        self.localization_thread = threading.Thread(target=self.run_localization, daemon=True)
+        self.localization_thread.start()
 
     def timerCallback(self):
         
         # TODO Part 3: Run the localization node
         # Remember that this file is already running the decision_maker node.
-
-        # Start Localization node in a separate thread
-        self.localization_thread = threading.Thread(target=self.run_localization, daemon=True)
-        self.localization_thread.start()
 
 
         if self.localizer.getPose()  is  None:
@@ -79,6 +78,8 @@ class decision_maker(Node):
         vel_msg=Twist()
         
         # TODO Part 3: Check if you reached the goal
+        reached_goal = isinstance(self.goal, tuple)  # Point goal -> (x, y)
+
         if type(self.goal) == list:
             reached_goal=True
         else: 
@@ -93,7 +94,7 @@ class decision_maker(Node):
             self.controller.PID_linear.logger.save_log()
             
             self.destroy_node()
-            rclpy.shutdown()   
+            self.shutdown()   
             return
         
         velocity, yaw_rate = self.controller.vel_request(self.localizer.getPose(), self.goal, True)
@@ -103,13 +104,11 @@ class decision_maker(Node):
     
     
     def run_localization(self):
-        """Function to spin the localization node in its own thread."""
         rclpy.spin(self.localizer)
 
     def shutdown(self):
-        """Graceful shutdown of both nodes."""
         self.get_logger().info("Shutting down nodes...")
-        self.localization_node.destroy_node()
+        self.localizer.destroy_node()
         self.destroy_node()
         rclpy.shutdown()
 
@@ -128,9 +127,9 @@ def main(args=None):
 
     # TODO Part 4: instantiate the decision_maker with the proper parameters for moving the robot
     if args.motion.lower() == "point":
-        DM = decision_maker()
+        DM=decision_maker(motion_type=POINT_PLANNER, goalPoint=[-1.0, -1.0], publisher_msg=Twist, publishing_topic='/cmd_vel', qos_publisher=10)
     elif args.motion.lower() == "trajectory":
-        DM = decision_maker()
+        DM=decision_maker(motion_type=TRAJECTORY_PLANNER, goalPoint=[-1.0, -1.0], publisher_msg=Twist, publishing_topic='/cmd_vel', qos_publisher=10)
     else:
         print("invalid motion type", file=sys.stderr)        
     
