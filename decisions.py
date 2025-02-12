@@ -67,8 +67,9 @@ class decision_maker(Node):
         # TODO Part 3: Run the localization node
         # Remember that this file is already running the decision_maker node.
 
-        rclpy.spin_once(self.localizer, timeout=0.01)
         #get current position
+        rclpy.spin_once(self.localizer, timeout=0.01)
+        
         curr_pose = self.localizer.getPose()
         
         if curr_pose  is  None:
@@ -98,7 +99,7 @@ class decision_maker(Node):
             self.shutdown()   
             return
         
-        velocity, yaw_rate = self.controller.vel_request(self.localizer.getPose(), self.goal, True)
+        velocity, yaw_rate = self.controller.vel_request(curr_pose, self.goal, True)
 
         #TODO Part 4: Publish the velocity to move the robot
         self.publisher.publish(velocity) 
