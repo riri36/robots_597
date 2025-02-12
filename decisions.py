@@ -56,35 +56,36 @@ class decision_maker(Node):
         self.localizer=localization(rawSensor)
 
         # Instantiate the planner
-        # NOTE: goalPoint is used only for the pointPlanner
+        # NOTE: goalPoint is used only for the pointPlanner        
         self.goal=self.planner.plan(goalPoint)
 
         self.create_timer(publishing_period, self.timerCallback)
-
-        # Start Localization node in a separate thread
-        self.localization_thread = threading.Thread(target=self.run_localization, daemon=True)
-        self.localization_thread.start()
+        
 
     def timerCallback(self):
         
         # TODO Part 3: Run the localization node
         # Remember that this file is already running the decision_maker node.
 
-
-        if self.localizer.getPose()  is  None:
+        rclpy.spin_once(self.localizer, timeout=0.01)
+        #get current position
+        curr_pose = self.localizer.getPose()
+        
+        if curr_pose  is  None:
             print("waiting for odom msgs ....")
             return
 
         vel_msg=Twist()
         
         # TODO Part 3: Check if you reached the goal
-        reached_goal = isinstance(self.goal, tuple)  # Point goal -> (x, y)
-
-        if type(self.goal) == list:
-            reached_goal=True
-        else: 
-            reached_goal=False
+        reached_goal=False
         
+        if type(self.goal) == list: #aka is a path
+            final_goal=self.planner.trajectory_planner()[-1]
+        else: #otherwise it will be a point
+            final_goal = self.goal
+        if calculate_linear_error(curr_pose, final_goal) < 0.05:
+                reached_goal=True
 
         if reached_goal:
             print("reached goal")
@@ -102,15 +103,6 @@ class decision_maker(Node):
         #TODO Part 4: Publish the velocity to move the robot
         self.publisher.publish(velocity) 
     
-    
-    def run_localization(self):
-        rclpy.spin(self.localizer)
-
-    def shutdown(self):
-        self.get_logger().info("Shutting down nodes...")
-        self.localizer.destroy_node()
-        self.destroy_node()
-        rclpy.shutdown()
 
 import argparse
 
