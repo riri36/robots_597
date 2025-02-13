@@ -88,7 +88,7 @@ class decision_maker(Node):
         
         # TODO Part 3: Check if you reached the goal
         Pose2D = namedtuple("Pose2D", ["x", "y"])
-        curr_pose = Pose2D(curr_pose[0], curr_pose[1])
+        # curr_pose = Pose2D(curr_pose[0], curr_pose[1])
 
         # Initialize self.goal_index if not set
         if not hasattr(self, "goal_index"):
@@ -96,7 +96,7 @@ class decision_maker(Node):
         
         if type(self.goal) == list: #aka is a path
             goal_list = list(zip(self.goal[0], self.goal[1]))
-            current_goal = Pose2D(goal_list[self.goal_index][0], goal_list[self.goal_index][1])
+            current_goal = [goal_list[self.goal_index][0], goal_list[self.goal_index][1]]
         # else: #otherwise it will be a point
         #     current_goal = self.goal
 
