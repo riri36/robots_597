@@ -3,6 +3,7 @@
 
 import sys
 import threading
+import rclpy
 
 from utilities import euler_from_quaternion, calculate_angular_error, calculate_linear_error
 from pid import PID_ctrl
@@ -22,7 +23,7 @@ from rclpy.executors import MultiThreadedExecutor
 
 # You may add any other imports you may need/want to use below
 # import ...
-
+from collections import namedtuple
 
 
 class decision_maker(Node):
@@ -68,7 +69,7 @@ class decision_maker(Node):
         # Remember that this file is already running the decision_maker node.
 
         #get current position
-        rclpy.spin_once(self.localizer, timeout=0.01)
+        rclpy.spin_once(self.localizer)
         
         curr_pose = self.localizer.getPose()
         
@@ -77,16 +78,31 @@ class decision_maker(Node):
             return
 
         vel_msg=Twist()
+
+        # for i, point in enumerate(self.goal):
+        #     print(f"Point {i}: {point}, Type: {type(point)}")
+
+        # print(self.goal[-1])
+
         
         # TODO Part 3: Check if you reached the goal
-        reached_goal=False
+        Pose2D = namedtuple("Pose2D", ["x", "y"])
+        curr_pose=Pose2D(curr_pose[0], curr_pose[1])
+
+        # Initialize self.goal_index if not set
+        if not hasattr(self, "goal_index"):
+            self.goal_index = 0  # Start from the first point
         
         if type(self.goal) == list: #aka is a path
-            final_goal=self.planner.trajectory_planner()[-1]
+            goal_list = list(zip(self.goal[0], self.goal[1]))
+            current_goal = Pose2D(goal_list[self.goal_index][0], goal_list[self.goal_index][1])
         else: #otherwise it will be a point
-            final_goal = self.goal
-        if calculate_linear_error(curr_pose, final_goal) < 0.05:
+            current_goal = self.goal
+
+        if calculate_linear_error(curr_pose, current_goal) < 0.05:
                 reached_goal=True
+                if self.goal_index < len(goal_list) - 1:
+                    self.goal_index += 1
 
         if reached_goal:
             print("reached goal")
