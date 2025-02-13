@@ -24,7 +24,7 @@ from rclpy.executors import MultiThreadedExecutor
 # You may add any other imports you may need/want to use below
 # import ...
 from collections import namedtuple
-
+import math
 
 class decision_maker(Node):
     
@@ -68,6 +68,8 @@ class decision_maker(Node):
         # TODO Part 3: Run the localization node
         # Remember that this file is already running the decision_maker node.
 
+        reached_goal = False
+
         #get current position
         rclpy.spin_once(self.localizer)
         
@@ -83,11 +85,10 @@ class decision_maker(Node):
         #     print(f"Point {i}: {point}, Type: {type(point)}")
 
         # print(self.goal[-1])
-
         
         # TODO Part 3: Check if you reached the goal
         Pose2D = namedtuple("Pose2D", ["x", "y"])
-        curr_pose=Pose2D(curr_pose[0], curr_pose[1])
+        curr_pose = Pose2D(curr_pose[0], curr_pose[1])
 
         # Initialize self.goal_index if not set
         if not hasattr(self, "goal_index"):
@@ -96,13 +97,12 @@ class decision_maker(Node):
         if type(self.goal) == list: #aka is a path
             goal_list = list(zip(self.goal[0], self.goal[1]))
             current_goal = Pose2D(goal_list[self.goal_index][0], goal_list[self.goal_index][1])
-        else: #otherwise it will be a point
-            current_goal = self.goal
+        # else: #otherwise it will be a point
+        #     current_goal = self.goal
 
-        if calculate_linear_error(curr_pose, current_goal) < 0.05:
+        lin_err =  calculate_linear_error(curr_pose, current_goal)
+        if (lin_err[0]**2+lin_err[1]**2)**(0.5) < 0.05:
                 reached_goal=True
-                if self.goal_index < len(goal_list) - 1:
-                    self.goal_index += 1
 
         if reached_goal:
             print("reached goal")
@@ -115,7 +115,7 @@ class decision_maker(Node):
             self.shutdown()   
             return
         
-        velocity, yaw_rate = self.controller.vel_request(curr_pose, self.goal, True)
+        velocity, yaw_rate = self.controller.vel_request(curr_pose, goal_list, True)
 
         #TODO Part 4: Publish the velocity to move the robot
         self.publisher.publish(velocity) 
