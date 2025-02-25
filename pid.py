@@ -52,32 +52,40 @@ class PID_ctrl:
         dt_avg = 0
         error_dot = 0
         error_sum = 0
+
         
         for i in range(1, len(self.history)):
             
-            t0=Time.from_msg(self.history[i-1][1])
-            t1=Time.from_msg(self.history[i][1])
+            # t0=Time.from_msg(self.history[i-1][1])
+            # t1=Time.from_msg(self.history[i][1])
+            # dt=(t1.nanoseconds - t0.nanoseconds) / 1e9
+            t0=self.history[i-1][1]
+            t1=self.history[i][1]
+            dt=(t1 - t0) / 1e9
+            # dt=(t1.nanoseconds - t0.nanoseconds) / 1e9
             
-            dt=(t1.nanoseconds - t0.nanoseconds) / 1e9
-            
+
             dt_avg += dt
 
             # use constant dt if the messages arrived inconsistent
             # for example dt=0.1 overwriting the calculation          
             
             # TODO Part 5: calculate the error dot 
-            e0=Time.from_msg(self.history[i-1][0])
-            e1=Time.from_msg(self.history[i][0])
-            error_sum += e1 - e0
+            # e0=Time.from_msg(self.history[i-1][0])
+            # e1=Time.from_msg(self.history[i][0])
+            # error_sum += e1 - e0
+            error_sum += self.history[i][0] - self.history[i-1][0]
+            error_dot += error_sum/dt
             
-        error_avg = error_sum/len(self.history)
+        # error_sum /= len(self.history)
+        error_dot /= len(self.history)
         dt_avg/=len(self.history)
         
         # Compute the error integral
         sum_ = 0
         for hist in self.history:
             # TODO Part 5: Gather the integration
-            sum_ += hist
+            sum_ += hist[0]
             pass
         
         error_int=sum_*dt_avg
@@ -92,7 +100,7 @@ class PID_ctrl:
         # TODO Part 5: Implement the control law corresponding to each type of controller
         elif self.type == PD:
             # pass
-            return self.kp*latest_error + self.kv*(error_avg/dt_avg) # complete
+            return self.kp*latest_error + self.kv*(error_dot) # complete
         
         elif self.type == PI:
             # pass
@@ -100,4 +108,4 @@ class PID_ctrl:
         
         elif self.type == PID:
             # pass
-            return self.kp*latest_error + self.ki*error_int + self.kv*(error_avg/dt_avg) # complete
+            return self.kp*latest_error + self.ki*error_int + self.kv*(error_dot) # complete

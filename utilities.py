@@ -1,4 +1,5 @@
 from math import atan2, asin, sqrt
+import math
 
 M_PI=3.1415926535
 
@@ -110,7 +111,8 @@ def calculate_linear_error(current_pose, goal_pose):
     # Remember to use the Euclidean distance to calculate the error.
 
     # Calculate the error vector x and y position
-    error_linear = [goal_pose[0][0] - current_pose[0] , goal_pose[0][1]-current_pose[1]]
+    error_linear = math.dist([goal_pose[0], goal_pose[1]], [current_pose[0], current_pose[1]])
+    #error_linear = [goal_pose[0] - current_pose[0] , goal_pose[1]-current_pose[1]]
 
     return error_linear
 
@@ -123,7 +125,7 @@ def calculate_angular_error(current_pose, goal_pose):
     # Remember that this function returns the difference in orientation between where the robot currently faces and where it should face to reach the goal
 
     # Calculate the error vectorx and y position
-    error_linear = [goal_pose.x - current_pose.x , goal_pose.y-current_pose.y]
+    error_linear = [goal_pose[0] - current_pose[0] , goal_pose[1]-current_pose[1]]
 
     # #Assumes theta is given from 0 to 2pi
     # curr_angle = current_pose.theta
@@ -131,7 +133,7 @@ def calculate_angular_error(current_pose, goal_pose):
     #     curr_angle = -1*(curr_angle-M_PI)
 
     #Assumes theta is give from pi to -pi
-    curr_angle = current_pose.theta
+    curr_angle = current_pose[2]
     
     # Use the linear error to find the desired angle we want the robot to face
     goal_angle = atan2(error_linear[0],error_linear[1])

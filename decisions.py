@@ -74,35 +74,28 @@ class decision_maker(Node):
         rclpy.spin_once(self.localizer)
         
         curr_pose = self.localizer.getPose()
+        # print(f"Current Pose: {curr_pose}")
+        # goal_list = list(zip(self.goal[0], self.goal[1]))
+        # print(f"goallist: {type(goal_list)}")
         
         if curr_pose  is  None:
             print("waiting for odom msgs ....")
             return
 
         vel_msg=Twist()
-
-        # for i, point in enumerate(self.goal):
-        #     print(f"Point {i}: {point}, Type: {type(point)}")
-
-        # print(self.goal[-1])
         
         # TODO Part 3: Check if you reached the goal
-        Pose2D = namedtuple("Pose2D", ["x", "y"])
-        # curr_pose = Pose2D(curr_pose[0], curr_pose[1])
 
         # Initialize self.goal_index if not set
         if not hasattr(self, "goal_index"):
             self.goal_index = 0  # Start from the first point
         
         if type(self.goal) == list: #aka is a path
-            goal_list = list(zip(self.goal[0], self.goal[1]))
-            current_goal = [goal_list[self.goal_index][0], goal_list[self.goal_index][1]]
-        # else: #otherwise it will be a point
-        #     current_goal = self.goal
-
-        lin_err =  calculate_linear_error(curr_pose, current_goal)
-        if (lin_err[0]**2+lin_err[1]**2)**(0.5) < 0.05:
-                reached_goal=True
+            current_goal=self.goal # needs modification before passing in
+        else: #otherwise it will be a point
+            current_goal=self.goal
+            
+        reached_goal = calculate_linear_error(curr_pose, current_goal) < 0.5
 
         if reached_goal:
             print("reached goal")
@@ -111,14 +104,17 @@ class decision_maker(Node):
             self.controller.PID_angular.logger.save_log()
             self.controller.PID_linear.logger.save_log()
             
-            self.destroy_node()
-            self.shutdown()   
+            raise SystemExit()
+            # self.destroy_node()
+            # self.shutdown()   
             return
         
-        velocity, yaw_rate = self.controller.vel_request(curr_pose, goal_list, True)
+        velocity, yaw_rate = self.controller.vel_request(curr_pose, self.goal, True)
 
         #TODO Part 4: Publish the velocity to move the robot
-        self.publisher.publish(velocity) 
+        vel_msg.linear.x = velocity
+        vel_msg.angular.z = yaw_rate
+        self.publisher.publish(vel_msg) 
     
 
 import argparse
@@ -136,7 +132,7 @@ def main(args=None):
 
     # TODO Part 4: instantiate the decision_maker with the proper parameters for moving the robot
     if args.motion.lower() == "point":
-        DM=decision_maker(motion_type=POINT_PLANNER, goalPoint=[-1.0, -1.0], publisher_msg=Twist, publishing_topic='/cmd_vel', qos_publisher=10)
+        DM=decision_maker(motion_type=POINT_PLANNER, goalPoint=[2.0, 2.0], publisher_msg=Twist, publishing_topic='/cmd_vel', qos_publisher=10)
     elif args.motion.lower() == "trajectory":
         DM=decision_maker(motion_type=TRAJECTORY_PLANNER, goalPoint=[-1.0, -1.0], publisher_msg=Twist, publishing_topic='/cmd_vel', qos_publisher=10)
     else:
