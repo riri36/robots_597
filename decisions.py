@@ -34,7 +34,7 @@ class decision_maker(Node):
 
         #TODO Part 4: Create a publisher for the topic responsible for robot's motion
         self.publisher=self.create_publisher(Twist,'/cmd_vel',10)
-
+        self.n = 0
         publishing_period=1/rate
         
         # Instantiate the controller
@@ -67,7 +67,6 @@ class decision_maker(Node):
         
         # TODO Part 3: Run the localization node
         # Remember that this file is already running the decision_maker node.
-
         reached_goal = False
 
         #get current position
@@ -89,15 +88,17 @@ class decision_maker(Node):
         # Initialize self.goal_index if not set
         if not hasattr(self, "goal_index"):
             self.goal_index = 0  # Start from the first point
-        
-        if type(self.goal) == list: #aka is a path
-            current_goal=self.goal # needs modification before passing in
+
+        if len(self.goal[0]) > 1: #aka is a path
+            current_goal=(self.goal[0][self.n],self.goal[1][self.n]) # needs modification before passing in
+            self.goal = list(zip(self.goal[0], self.goal[1]))
         else: #otherwise it will be a point
             current_goal=self.goal
             
         reached_goal = calculate_linear_error(curr_pose, current_goal) < 0.5
 
         if reached_goal:
+            self.n += 1
             print("reached goal")
             self.publisher.publish(vel_msg)
             
