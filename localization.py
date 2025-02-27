@@ -37,8 +37,7 @@ class localization(Node):
         # TODO Part 3: Read x,y, theta, and record the stamp
         self.odom_initialized=True
 
-        timestamp = Time.from_msg(pose_msg.header.stamp).nanoseconds
-
+        timestamp = pose_msg.header.stamp
         odom_orientation = pose_msg.pose.pose.orientation
         odom_pos = pose_msg.pose.pose.position
         # odom_lin_vel = pose_msg.twist.twist.linear

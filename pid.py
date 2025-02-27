@@ -51,8 +51,6 @@ class PID_ctrl:
         # Compute the error derivative
         dt_avg = 0
         error_dot = 0
-        error_sum = 0
-
         
         for i in range(1, len(self.history)):
             

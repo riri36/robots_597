@@ -1,6 +1,5 @@
 # Imports
 
-
 import sys
 import threading
 import rclpy
@@ -41,11 +40,11 @@ class decision_maker(Node):
         # TODO Part 5: Tune your parameters here
     
         if motion_type == POINT_PLANNER:
-            self.controller=controller(klp=0.2, klv=0.5, kap=0.8, kav=0.6)
+            self.controller=controller(klp=0.2, kli=5, klv=0.1, kap=0.8, kai=0.2, kav=0.1)
             self.planner=planner(POINT_PLANNER)    
     
         elif motion_type==TRAJECTORY_PLANNER:
-            self.controller=trajectoryController(klp=0.2, klv=0.5, kap=0.8, kav=0.6)
+            self.controller=trajectoryController(klp=0.2, kli=5, klv=0.1, kap=0.8, kai=0.2, kav=0.1)
             self.planner=planner(TRAJECTORY_PLANNER)
 
         else:
@@ -88,7 +87,7 @@ class decision_maker(Node):
         if not hasattr(self, "goal_index"):
             self.goal_index = 0  # Start from the first point
 
-        if len(self.goal[0]) > 1: #aka is a path
+        if type(self.goal) == list: #aka is a path
             current_goal=(self.goal[0][self.n],self.goal[1][self.n]) # needs modification before passing in
             self.goal = list(zip(self.goal[0], self.goal[1]))
         else: #otherwise it will be a point
