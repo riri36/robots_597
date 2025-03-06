@@ -51,20 +51,18 @@ class PID_ctrl:
         # Compute the error derivative
         dt_avg = 0
         error_dot = 0
-        error_sum = 0
-
         
         for i in range(1, len(self.history)):
             
             # t0=Time.from_msg(self.history[i-1][1])
             # t1=Time.from_msg(self.history[i][1])
             # dt=(t1.nanoseconds - t0.nanoseconds) / 1e9
-            t0=self.history[i-1][1]
-            t1=self.history[i][1]
-            dt=(t1 - t0) / 1e9
+            t0=Time.from_msg(self.history[i-1][1])
+            t1=Time.from_msg(self.history[i][1])
+
+            dt=(t1.nanoseconds - t0.nanoseconds) / 1e9
             # dt=(t1.nanoseconds - t0.nanoseconds) / 1e9
             
-
             dt_avg += dt
 
             # use constant dt if the messages arrived inconsistent
@@ -74,10 +72,8 @@ class PID_ctrl:
             # e0=Time.from_msg(self.history[i-1][0])
             # e1=Time.from_msg(self.history[i][0])
             # error_sum += e1 - e0
-            error_sum += self.history[i][0] - self.history[i-1][0]
-            error_dot += error_sum/dt
+            error_dot += (self.history[i][0] - self.history[i-1][0])/dt
             
-        # error_sum /= len(self.history)
         error_dot /= len(self.history)
         dt_avg/=len(self.history)
         
@@ -89,9 +85,11 @@ class PID_ctrl:
             pass
         
         error_int=sum_*dt_avg
+
+        latest_time_stamp = Time.from_msg(stamp).nanoseconds
         
         # TODO Part 4: Log your errors
-        self.logger.log_values( [latest_error, error_dot, error_int, stamp] )
+        self.logger.log_values( [latest_error, error_dot, error_int, latest_time_stamp] )
         
         # TODO Part 4: Implement the control law of P-controller
         if self.type == P:
