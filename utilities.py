@@ -111,8 +111,14 @@ def calculate_linear_error(current_pose, goal_pose):
     # Remember to use the Euclidean distance to calculate the error.
 
     # Calculate the error vector x and y position
-    error_linear = math.dist([goal_pose[0], goal_pose[1]], [current_pose[0], current_pose[1]])
-    #error_linear = [goal_pose[0] - current_pose[0] , goal_pose[1]-current_pose[1]]
+    
+    # error_linear = math.dist([goal_pose[0], goal_pose[1]], [current_pose[0], current_pose[1]])
+    x1, y1, _, _ = current_pose
+    x2, y2 = goal_pose
+    error_linear= sqrt(
+        pow(y2 - y1, 2) +
+        pow(x2 - x1, 2)
+    )
 
     return error_linear
 
@@ -125,28 +131,38 @@ def calculate_angular_error(current_pose, goal_pose):
     # Remember that this function returns the difference in orientation between where the robot currently faces and where it should face to reach the goal
 
     # Calculate the error vectorx and y position
-    error_linear = [goal_pose[0] - current_pose[0] , goal_pose[1]-current_pose[1]]
+    # error_linear = [goal_pose[0] - current_pose[0] , goal_pose[1]-current_pose[1]]
 
-    # #Assumes theta is given from 0 to 2pi
-    # curr_angle = current_pose.theta
-    # if curr_angle > M_PI:
-    #     curr_angle = -1*(curr_angle-M_PI)
-
-    #Assumes theta is give from pi to -pi
-    curr_angle = current_pose[2]
+    # curr_angle = current_pose[2]
     
-    # Use the linear error to find the desired angle we want the robot to face
-    goal_angle = atan2(error_linear[0],error_linear[1])
+    # # Use the linear error to find the desired angle we want the robot to face
+    # goal_angle = atan2(error_linear[0],error_linear[1])
 
-    # Calculate both options for the robot to roatate to goal angle
-    angle_diff = [goal_angle - curr_angle, curr_angle - goal_angle]
+    # # Calculate both options for the robot to roatate to goal angle
+    # angle_diff = [goal_angle - curr_angle, curr_angle - goal_angle]
 
-    # Take the smallest angle error and set that to error term
-    if abs(angle_diff[1]) > abs(angle_diff[0]):
-        error_angular = angle_diff[0]
-    else:
-        error_angular = angle_diff[1]
+    # # Take the smallest angle error and set that to error term
+    # if abs(angle_diff[1]) > abs(angle_diff[0]):
+    #     error_angular = angle_diff[0]
+    # else:
+    #     error_angular = angle_diff[1]
+
+    # return error_angular
+
+    x1, y1, theta1, _ = current_pose
+    x2, y2 = goal_pose
+
+    theta2 = atan2(
+        y2 - y1,
+        x2 - x1
+    )
+
+    error_angular = theta2 - theta1
 
     # Remember to handle the cases where the angular error might exceed the range [-π, π]
-    
+    while error_angular > M_PI:
+        error_angular -= 2 * M_PI
+    while error_angular < -M_PI:
+        error_angular += 2 * M_PI
+
     return error_angular
