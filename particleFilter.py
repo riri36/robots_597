@@ -173,14 +173,14 @@ class particleFilter(Node):
         particles_weights = particles_weights / np.sum(particles_weights)
         
         # TODO: randomly sampling N particles from the list of particles based on their weights (hint: use np.random.choice)
-        sampled_particles = ...
+        sampled_particles = np.random.choice(a=self.particles, size=10, replace=True, p=particles_weights)
 
         for bp in sampled_particles:
             x, y, th = bp.getPose()
             # TODO: add noise to the x, y, and th, use the same std_noise for x, y, and th
-            new_x = x + ...
-            new_y = y + ...
-            new_th = th + ...
+            new_x = x + np.random.normal(0,std_noise)
+            new_y = y + np.random.normal(0,std_noise)
+            new_th = th + np.random.normal(0,std_noise)
 
             new_particle = particle([new_x, new_y, new_th], bp.getWeight())
 
