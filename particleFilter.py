@@ -100,7 +100,11 @@ class particleFilter(Node):
         numParticles = self.numParticles
 
         # TODO: generate the particles around the initial pose (x, y, th) (you should use the std_particle_x, std_particle_y, std_particle_theta)
-        self.particlePoses = ... #size should be (numParticles, 3)
+        self.particlePoses = np.vstack([
+            np.random.normal(x, self.std_particle_x, numParticles),
+            np.random.normal(y, self.std_particle_y, numParticles),
+            np.random.normal(th, self.std_particle_theta, numParticles)
+        ]).T
 
         self.particles = [particle(particle_, 1/numParticles) for particle_ in
                           self.particlePoses]
