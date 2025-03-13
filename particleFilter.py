@@ -76,9 +76,9 @@ class particleFilter(Node):
         # Particle Filter Variables
         self.particles = []
         self.numParticles = numParticles
-        self.std_particle_x = 0.5
-        self.std_particle_y = 0.5
-        self.std_particle_theta = 0.5
+        self.std_particle_x = 0.15
+        self.std_particle_y = 0.15
+        self.std_particle_theta = 0.15
 
         # Some flags and variables
         self.initialized = False
@@ -105,6 +105,7 @@ class particleFilter(Node):
             np.random.normal(y, self.std_particle_y, numParticles),
             np.random.normal(th, self.std_particle_theta, numParticles)
         ]).T
+        # print(self.particlePoses)
 
         self.particles = [particle(particle_, 1/numParticles) for particle_ in
                           self.particlePoses]
@@ -177,7 +178,7 @@ class particleFilter(Node):
         particles_weights = particles_weights / np.sum(particles_weights)
         
         # TODO: randomly sampling N particles from the list of particles based on their weights (hint: use np.random.choice)
-        sampled_particles = np.random.choice(a=self.particles, size=10, replace=True, p=particles_weights)
+        sampled_particles = np.random.choice(a=self.particles, size=500, replace=True, p=particles_weights)
 
         for bp in sampled_particles:
             x, y, th = bp.getPose()

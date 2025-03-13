@@ -18,6 +18,20 @@ class particle:
         w: angular velocity
         dt: time step
         """
+        # if np.abs(w) > 1e-6:  # Avoid division by zero
+        #     self.pose[0] += (v / w) * (- sin(self.pose[2]) + sin(self.pose[2] + w * dt))
+        #     self.pose[1] += (v / w) * (-cos(self.pose[2] + w * dt) + cos(self.pose[2]))
+        # else:  # Approximate straight-line motion
+        #     self.pose[0] += v * dt * np.cos(self.pose[2])
+        #     self.pose[1] += v * dt * np.sin(self.pose[2])
+
+        # self.pose[2] += w * dt
+        # self.pose[2] = (self.pose[2] + np.pi) % (2 * np.pi) - np.pi  # Normalize theta to [-π, π]
+
+        # self.pose[0] += float(-(v/w)*sin(self.pose[2]) + (v/w)*sin(self.pose[2] + w*dt))
+        # self.pose[1] += float((v/w)*cos(self.pose[2]) - (v/w)*cos(self.pose[2] + w*dt))
+        # self.pose[2] += float(w*dt)
+
         self.pose[0] += v*dt*cos(self.pose[2]+w*dt/2)
         self.pose[1] += v*dt*sin(self.pose[2]+w*dt/2)
         self.pose[2] += w*dt
