@@ -174,20 +174,27 @@ class mapManipulator(Node):
 
         from sklearn.neighbors import KDTree
         
+        # find indices where obstacles are present
         indices = np.where(image_array < 10)
         indices_arr = np.array([indices[0], indices[1]]).T
         
+        # transform occupied cell grid points to map coordinates
         occupied_points = self.cell_2_position(indices_arr)
+        # transform all available movable cell blocks to map coors
         all_indices = np.array([[i, j] for i in range(self.height) for j in range(self.width)])
         all_positions = self.cell_2_position(all_indices)
 
         kdt=KDTree(occupied_points)
 
+        # use KD tree to find the nearest distance to an obstacle from every available position
         dists=kdt.query(all_positions, k=1)[0][:]
+        # use gaussian func to convert distances (higher=more likely) to probabilites
         probabilities=np.exp( -(dists**2) / (2*self.laser_sig**2))
         
+        # reshapes probabilites into image_array shape
         likelihood_field=probabilities.reshape(image_array.shape)
         
+        # converts field to image (higher prob=darker pixels)
         likelihood_field_img=np.array(255-255*probabilities.reshape(image_array.shape), dtype=np.int32)
         
         self.likelihood_img=likelihood_field_img
