@@ -78,7 +78,7 @@ def search(maze, start, end):
     if start_node.heuristic == "manhattan":
         start_node.h = end[0]-start[0]+end[1]-start[1]   # heuristic estimated cost to end Node
     else:
-        start_node.h = sqrt((end[0]-start[0])^2 + (end[1]-start[1])^2)
+        start_node.h = sqrt((end[0]-start[0])**2 + (end[1]-start[1])**2)
     start_node.f = start_node.g + start_node.h
 
     end_node = Node(position=end)
@@ -190,16 +190,16 @@ def search(maze, start, end):
         for child in children:
 
             # TODO PART 4 Child is on the visited dict (use get method to check if child is in visited dict, if not found then default value is False)
-            if (visited_dict.get(child)):
+            if (visited_dict.get(child.position)):
                 continue
 
             # TODO PART 4 Create the f, g, and h values
-            child.g = sqrt((child.position[0]-current_node.position[0])^2 + (child.position[1]-current_node.position[1])^2)
+            child.g = sqrt((child.position[0]-current_node.position[0])**2 + (child.position[1]-current_node.position[1])**2)
             # Heuristic costs calculated here, this is using eucledian distance
             if child.heuristic == "manhattan":
                 child.h = end[0]-child.position[0]+end[1]-child.position[1]   # heuristic estimated cost to end Node
             else:
-                child.h = sqrt((end[0]-child.position[0])^2 + (end[1]-child.position[1])^2)
+                child.h = sqrt((end[0]-child.position[0])**2 + (end[1]-child.position[1])**2)
 
             child.f = child.g + child.h
 
