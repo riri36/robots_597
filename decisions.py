@@ -31,7 +31,7 @@ import time
 class decision_maker(Node):
     
     
-    def __init__(self, publisher_msg, publishing_topic, qos_publisher, rate=10, motion_type=POINT_PLANNER):
+    def __init__(self, publisher_msg, publishing_topic, qos_publisher, rate=10, motion_type=ASTAR_PLANNER):
 
         super().__init__("decision_maker")
 
@@ -55,7 +55,7 @@ class decision_maker(Node):
         elif motion_type==ASTAR_PLANNER:
             # TODO: adjust the PID gains and the lookAhead distance
             self.controller = trajectoryController(
-                klp=0.05, klv=0.2, kli=0.2, kap=0.8, kav=0.6, kai=0.2, lookAhead=3)
+                klp=0.2, klv=0.1, kli=4, kap=1.1, kav=0.8, kai=2.5, lookAhead=1)
             self.planner=planner(ASTAR_PLANNER, mapName="your_map/room.yaml")
         
         else:

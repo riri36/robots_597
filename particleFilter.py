@@ -76,9 +76,9 @@ class particleFilter(Node):
         # Particle Filter Variables
         self.particles = []
         self.numParticles = numParticles
-        self.std_particle_x = 0.5
-        self.std_particle_y = 0.5
-        self.std_particle_theta = 0.5
+        self.std_particle_x = 0.15
+        self.std_particle_y = 0.15
+        self.std_particle_theta = 0.15
 
         # Some flags and variables
         self.initialized = False

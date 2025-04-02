@@ -76,7 +76,7 @@ def search(maze, start, end):
     start_node = Node(position=start, heuristic="manhattan")
     start_node.g = 0     # cost from start Node
     if start_node.heuristic == "manhattan":
-        start_node.h = end[0]-start[0]+end[1]-start[1]   # heuristic estimated cost to end Node
+        start_node.h = abs(end[0]-start[0])+abs(end[1]-start[1])   # heuristic estimated cost to end Node
     else:
         start_node.h = sqrt((end[0]-start[0])**2 + (end[1]-start[1])**2)
     start_node.f = start_node.g + start_node.h
@@ -197,7 +197,7 @@ def search(maze, start, end):
             child.g = sqrt((child.position[0]-current_node.position[0])**2 + (child.position[1]-current_node.position[1])**2)
             # Heuristic costs calculated here, this is using eucledian distance
             if child.heuristic == "manhattan":
-                child.h = end[0]-child.position[0]+end[1]-child.position[1]   # heuristic estimated cost to end Node
+                child.h = abs(end[0]-child.position[0])+abs(end[1]-child.position[1])   # heuristic estimated cost to end Node
             else:
                 child.h = sqrt((end[0]-child.position[0])**2 + (end[1]-child.position[1])**2)
 
