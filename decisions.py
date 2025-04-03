@@ -55,7 +55,7 @@ class decision_maker(Node):
         elif motion_type==ASTAR_PLANNER:
             # TODO: adjust the PID gains and the lookAhead distance
             self.controller = trajectoryController(
-                klp=0.2, klv=0.1, kli=4, kap=1.1, kav=0.8, kai=2.5, lookAhead=1)
+                klp=0.07, klv=0.2, kli=0.2, kap=1.2, kav=0.5, kai=0.5, lookAhead=3)
             self.planner=planner(ASTAR_PLANNER, mapName="your_map/room.yaml")
         
         else:
